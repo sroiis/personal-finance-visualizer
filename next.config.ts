@@ -1,7 +1,7 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // remove any experimental.css
+  experimental: {}, // or just delete this line entirely if not needed
 };
 
-export default nextConfig;
+module.exports = nextConfig;

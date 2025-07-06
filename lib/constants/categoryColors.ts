@@ -1,0 +1,23 @@
+// lib/constants/categoryColors.ts
+export const categoryColors: Record<string, string> = {
+  Food: '#FF6384',
+  Transport: '#36A2EB',
+  Entertainment: '#FFCE56',
+  Shopping: '#4BC0C0',
+  Bills: '#9966FF',
+  Health: '#FF9F40',
+  Education: '#8e44ad',
+  Travel: '#2ecc71',
+  'Gifts & Donations': '#f1c40f',
+  Savings: '#e74c3c',
+  Investments: '#00cec9',
+  'Personal Care': '#fd79a8',
+  Rent: '#6c5ce7',
+  Work: '#00b894',
+  Pets: '#fab1a0',
+  Subscriptions: '#ffeaa7',
+  Childcare: '#a29bfe',
+  Debt: '#d63031',
+  Emergency: '#e17055',
+  Miscellaneous: '#b2bec3',
+};

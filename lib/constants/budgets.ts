@@ -1,0 +1,23 @@
+// lib/constants/budgets.ts
+export const initialBudgets: Record<string, number> = {
+  Food: 3000,
+  Transport: 1500,
+  Entertainment: 2000,
+  Shopping: 2500,
+  Bills: 1800,
+  Health: 1200,
+  Education: 3000,
+  Travel: 4000,
+  'Gifts & Donations': 1000,
+  Savings: 5000,
+  Investments: 4000,
+  'Personal Care': 1000,
+  Rent: 8000,
+  Work: 2000,
+  Pets: 500,
+  Subscriptions: 1000,
+  Childcare: 2000,
+  Debt: 2500,
+  Emergency: 1500,
+  Miscellaneous: 800,
+};
