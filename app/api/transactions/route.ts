@@ -8,6 +8,7 @@ export async function GET() {
     const data = await Transaction.find().sort({ date: -1 }); // optional: sort by latest
     return NextResponse.json(data);
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'Failed to fetch transactions' }, { status: 500 });
   }
 }
@@ -33,6 +34,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(newTx, { status: 201 });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 });
   }
 }
@@ -49,6 +51,7 @@ export async function DELETE(req: NextRequest) {
     await Transaction.findByIdAndDelete(id);
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'Failed to delete transaction' }, { status: 500 });
   }
 }
@@ -66,6 +69,7 @@ export async function PATCH(req: NextRequest) {
     const tx = await Transaction.findByIdAndUpdate(id, updates, { new: true });
     return NextResponse.json(tx);
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'Failed to update transaction' }, { status: 500 });
   }
 }
