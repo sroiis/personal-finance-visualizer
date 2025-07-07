@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { format } from 'date-fns';
 
 import TransactionList from '@/components/TransactionList';
 import AddTransactionButton from '@/components/AddTransactionButton';
@@ -8,15 +9,42 @@ import ChartToggle from '@/components/ChartToggle';
 import CategoryPieChart from '@/components/CategoryPieChart';
 import SummaryCards from '@/components/SummaryCards';
 import SetBudgetButton from '@/components/SetBudgetButton';
+import MonthlyBarChart from '@/components/MonthlyBarChart';
+
+interface Transaction {
+  _id: string;
+  amount: number;
+  category: string;
+  description: string;
+  date: string;
+}
 
 export default function Home() {
   const [reload, setReload] = useState(false);
   const [showMonthlyOnly, setShowMonthlyOnly] = useState(true);
   const [showMonthlyBreakdown, setShowMonthlyBreakdown] = useState(false);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${window.location.origin}/api/transactions`);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setTransactions(data);
+        } else {
+          console.error('Expected array, got:', data);
+        }
+      } catch (err) {
+        console.error('Error fetching transactions:', err);
+      }
+    };
+
+    fetchData();
+  }, [reload]);
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      {/* Sticky Header */}
+    <main className="min-h-screen bg-pink-50 text-gray-800">
       <div className="sticky top-0 z-50 bg-white p-4 border-b flex justify-between items-center shadow-md">
         <h1 className="text-2xl font-bold text-gray-800">Personal Finance Visualizer</h1>
         <div className="flex gap-2">
@@ -25,37 +53,27 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Summary Cards */}
       <div className="px-6 mt-4">
         <SummaryCards reload={reload} showMonthlyBreakdown={showMonthlyBreakdown} />
       </div>
 
-      {/* Spending Breakdown Section Heading */}
-      <div className="px-6 mt-6 mb-2">
-        <h2 className="text-lg font-semibold text-gray-800">Spending Breakdown</h2>
-      </div>
+      <div className="px-6 mt-8 flex justify-end mb-4">
+  <ChartToggle
+    showMonthlyOnly={showMonthlyOnly}
+    setShowMonthlyOnly={setShowMonthlyOnly}
+  />
+</div>
 
-      {/* View Monthly Totals Button + Toggle */}
-      <div className="px-6 mb-4 flex justify-between items-center">
-        <button
-          className="text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-100 transition"
-          onClick={() => setShowMonthlyBreakdown(!showMonthlyBreakdown)}
-        >
-          {showMonthlyBreakdown ? 'Hide Monthly Totals' : 'View Monthly Totals'}
-        </button>
 
-        <ChartToggle
-          showMonthlyOnly={showMonthlyOnly}
-          setShowMonthlyOnly={setShowMonthlyOnly}
-        />
-      </div>
-
-      {/* Pie Chart */}
       <div className="px-6">
         <CategoryPieChart reload={reload} monthlyOnly={showMonthlyOnly} />
       </div>
 
-      {/* Transaction List */}
+      <div className="px-6 mt-6">
+        <h2 className="text-xl font-semibold mb-4">Monthly Spending</h2>
+        <MonthlyBarChart reload={reload} />
+      </div>
+
       <div className="mt-6 px-6">
         <TransactionList reload={reload} />
       </div>
