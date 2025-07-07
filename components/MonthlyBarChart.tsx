@@ -18,7 +18,7 @@ export default function MonthlyBarChart({ reload }: { reload: boolean }) {
         grouped[month] = (grouped[month] || 0) + tx.amount;
       });
 
-      const monthlyBudget = 20000; // ⛳ Change this later to dynamic total if needed
+      const monthlyBudget = 20000; 
 
       const final = Object.entries(grouped).map(([month, value]) => ({
         month,
