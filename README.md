@@ -47,13 +47,13 @@ yarn dev
 4. Open http://localhost:3000 in your browser.
 
 ## Project Structure
-components/ — Reusable UI components like cards and buttons
+components/ : Reusable UI components like cards and buttons
 
-lib/constants/ — Static data like transaction categories
+lib/constants/ : Static data like transaction categories
 
-pages/api/transactions.ts — Backend API to fetch transactions
+pages/api/transactions.ts : Backend API to fetch transactions
 
-app/ — Next.js app directory containing main pages and layouts
+app/ : Next.js app directory containing main pages and layouts
 
 ## MongoDB Setup
 
