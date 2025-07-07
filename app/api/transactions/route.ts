@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET() {
   try {
     await connectDB();
-    const data = await Transaction.find().sort({ date: -1 }); // optional: sort by latest
+    const data = await Transaction.find().sort({ date: -1 }); 
     return NextResponse.json(data);
   } catch (error) {
     console.error(error);
