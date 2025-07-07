@@ -11,7 +11,7 @@ export default function TransactionForm({ onAdd }: { onAdd: () => void }) {
     const [amount, setAmount] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-    const [category, setCategory] = useState('Bills'); 
+    const [category, setCategory] = useState('Bills');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

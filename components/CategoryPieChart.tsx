@@ -27,9 +27,9 @@ export default function CategoryPieChart({ reload, monthlyOnly }: Props) {
       const now = new Date();
       const filtered = monthlyOnly
         ? all.filter((tx: Transaction) => {
-            const txDate = new Date(tx.date);
-            return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
-          })
+          const txDate = new Date(tx.date);
+          return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
+        })
         : all;
 
       const grouped: Record<string, number> = {};
@@ -77,9 +77,9 @@ export default function CategoryPieChart({ reload, monthlyOnly }: Props) {
             >
               {data.map((entry, index) => (
                 <Cell
-  key={`cell-${index}`}
-  fill={entry.color || fallbackColors[index % fallbackColors.length]}
-/>
+                  key={`cell-${index}`}
+                  fill={entry.color || fallbackColors[index % fallbackColors.length]}
+                />
 
               ))}
             </Pie>

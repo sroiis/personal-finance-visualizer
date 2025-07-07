@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { categories } from '@/lib/constants/categories';
-import { Button } from '@/components/ui/button'; 
+import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 
 interface Transaction {
@@ -60,71 +60,70 @@ export default function SummaryCards({ reload }: { reload: boolean }) {
     categories.find((c) => c.value === value)?.label || value;
 
   return (
-  <div className="p-4 rounded-md shadow-md">
-    {/* Wrap these 3 cards in a flex container */}
-    <div className="flex gap-4 mb-4">
-      {/* Total This Month */}
-      <Card className="bg-white shadow flex-1">
-        <CardContent className="p-4">
-          <p className="text-sm text-muted-foreground">Total Spent (This Month)</p>
-          <p className="text-2xl font-semibold text-foreground mt-2">₹{monthlyTotal}</p>
-        </CardContent>
-      </Card>
+    <div className="p-4 rounded-md shadow-md">
+      <div className="flex gap-4 mb-4">
+        {/* Total This Month */}
+        <Card className="bg-white shadow flex-1">
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground">Total Spent (This Month)</p>
+            <p className="text-2xl font-semibold text-foreground mt-2">₹{monthlyTotal}</p>
+          </CardContent>
+        </Card>
 
-      {/* Top Category */}
-      <Card className="bg-white shadow flex-1">
-        <CardContent className="p-4">
-          <p className="text-sm text-muted-foreground">Top Category</p>
-          <p className="text-xl font-medium text-foreground mt-2">
-            {topCategory ? getLabel(topCategory) : '—'}
-          </p>
-        </CardContent>
-      </Card>
+        {/* Top Category */}
+        <Card className="bg-white shadow flex-1">
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground">Top Category</p>
+            <p className="text-xl font-medium text-foreground mt-2">
+              {topCategory ? getLabel(topCategory) : '—'}
+            </p>
+          </CardContent>
+        </Card>
 
-      {/* Most Recent */}
-      <Card className="bg-white shadow flex-1">
-        <CardContent className="p-4">
-          <p className="text-sm text-muted-foreground mb-2">Recent Transactions</p>
-          <ul className="space-y-1 text-sm">
-            {recent.map((tx) => (
-              <li key={tx._id} className="flex justify-between">
-                <span>{tx.description || 'No description'}</span>
-                <span className="font-medium">₹{tx.amount}</span>
-              </li>
+        {/* Most Recent */}
+        <Card className="bg-white shadow flex-1">
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground mb-2">Recent Transactions</p>
+            <ul className="space-y-1 text-sm">
+              {recent.map((tx) => (
+                <li key={tx._id} className="flex justify-between">
+                  <span>{tx.description || 'No description'}</span>
+                  <span className="font-medium">₹{tx.amount}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Monthly Breakdown Button */}
+      <div className="col-span-3 mt-2 text-center">
+        <Button
+          variant="outline"
+          onClick={() => setShowMonthlyBreakdown(!showMonthlyBreakdown)}
+        >
+          {showMonthlyBreakdown ? 'Hide Monthly Totals' : 'View Monthly Totals'}
+        </Button>
+
+        {showMonthlyBreakdown && (
+          <div className="mt-4 text-sm text-left bg-gold p-4 rounded-md shadow">
+            <h3 className="font-semibold mb-2">Monthly Totals</h3>
+            {Object.entries(
+              transactions.reduce<Record<string, number>>((acc, tx) => {
+                const month = format(new Date(tx.date), 'MMMM yyyy');
+                acc[month] = (acc[month] || 0) + tx.amount;
+                return acc;
+              }, {})
+            ).map(([month, total]) => (
+              <div key={month} className="flex justify-between">
+                <span>{month}</span>
+                <span className="font-medium">₹{total}</span>
+              </div>
             ))}
-          </ul>
-        </CardContent>
-      </Card>
+          </div>
+        )}
+      </div>
     </div>
-
-    {/* Monthly Breakdown Button */}
-    <div className="col-span-3 mt-2 text-center">
-      <Button
-        variant="outline"
-        onClick={() => setShowMonthlyBreakdown(!showMonthlyBreakdown)}
-      >
-        {showMonthlyBreakdown ? 'Hide Monthly Totals' : 'View Monthly Totals'}
-      </Button>
-
-      {showMonthlyBreakdown && (
-        <div className="mt-4 text-sm text-left bg-gold p-4 rounded-md shadow">
-          <h3 className="font-semibold mb-2">Monthly Totals</h3>
-          {Object.entries(
-            transactions.reduce<Record<string, number>>((acc, tx) => {
-              const month = format(new Date(tx.date), 'MMMM yyyy');
-              acc[month] = (acc[month] || 0) + tx.amount;
-              return acc;
-            }, {})
-          ).map(([month, total]) => (
-            <div key={month} className="flex justify-between">
-              <span>{month}</span>
-              <span className="font-medium">₹{total}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  </div>
-);
+  );
 
 }

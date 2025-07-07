@@ -58,11 +58,11 @@ export default function Home() {
       </div>
 
       <div className="px-6 mt-8 flex justify-end mb-4">
-  <ChartToggle
-    showMonthlyOnly={showMonthlyOnly}
-    setShowMonthlyOnly={setShowMonthlyOnly}
-  />
-</div>
+        <ChartToggle
+          showMonthlyOnly={showMonthlyOnly}
+          setShowMonthlyOnly={setShowMonthlyOnly}
+        />
+      </div>
 
 
       <div className="px-6">
