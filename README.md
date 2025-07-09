@@ -25,8 +25,8 @@ A Next.js app to track and visualize your personal finance transactions: showing
 1. Clone the repo:
 
 ```bash
-git clone https://github.com/yourusername/yourrepo.git
-cd yourrepo
+git clone https://github.com/sroiis/personal-finance-visualizer.git
+cd personal-finance-visualizer
 ```
 
 2. Install dependencies:
