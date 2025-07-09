@@ -66,7 +66,7 @@ This project uses MongoDB to store transaction data. To run the app locally, you
 2. **Create a `.env.local` file** in the root of the project with your MongoDB connection string:
 
 ```env
-MONGODB_URI="your_mongodb_connection_string_here"
+MONGODB_URI=your_mongodb_connection_string_here
 ```
 
 3. The backend API (/api/transactions) will use this env variable to connect and fetch data.
