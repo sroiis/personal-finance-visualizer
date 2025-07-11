@@ -9,6 +9,7 @@ interface Transaction {
   amount: number;
   category: string;
   date: string;
+  type: 'income' | 'expense';
 }
 
 interface Props {
@@ -22,18 +23,22 @@ export default function CategoryPieChart({ reload, monthlyOnly }: Props) {
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch('/api/transactions');
-      const all = await res.json();
+      const all: Transaction[] = await res.json();
 
       const now = new Date();
       const filtered = monthlyOnly
-        ? all.filter((tx: Transaction) => {
-          const txDate = new Date(tx.date);
-          return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
-        })
-        : all;
+        ? all.filter((tx) => {
+            const txDate = new Date(tx.date);
+            return (
+              tx.type === 'expense' &&
+              txDate.getMonth() === now.getMonth() &&
+              txDate.getFullYear() === now.getFullYear()
+            );
+          })
+        : all.filter((tx) => tx.type === 'expense');
 
       const grouped: Record<string, number> = {};
-      filtered.forEach((tx: Transaction) => {
+      filtered.forEach((tx) => {
         grouped[tx.category] = (grouped[tx.category] || 0) + tx.amount;
       });
 
@@ -41,7 +46,6 @@ export default function CategoryPieChart({ reload, monthlyOnly }: Props) {
         name: category,
         value: total,
         color: categoryColors[category],
-
       }));
 
       setData(chartData);
@@ -80,7 +84,6 @@ export default function CategoryPieChart({ reload, monthlyOnly }: Props) {
                   key={`cell-${index}`}
                   fill={entry.color || fallbackColors[index % fallbackColors.length]}
                 />
-
               ))}
             </Pie>
             <Tooltip />

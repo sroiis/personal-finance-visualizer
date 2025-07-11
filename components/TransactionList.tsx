@@ -11,7 +11,13 @@ import { categoryColors } from '@/lib/constants/categoryColors';
 export default function TransactionList({ reload }: { reload: boolean }) {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState({ amount: '', description: '', date: '', category: '' });
+  const [form, setForm] = useState({
+    amount: '',
+    description: '',
+    date: '',
+    category: '',
+    type: 'expense',
+  });
   const [trigger, setTrigger] = useState(false);
 
   useEffect(() => {
@@ -35,6 +41,7 @@ export default function TransactionList({ reload }: { reload: boolean }) {
       description: tx.description || '',
       date: tx.date.slice(0, 10),
       category: tx.category,
+      type: tx.type || 'expense',
     });
   };
 
@@ -46,6 +53,7 @@ export default function TransactionList({ reload }: { reload: boolean }) {
         description: form.description,
         date: form.date,
         category: form.category,
+        type: form.type,
       }),
       headers: { 'Content-Type': 'application/json' },
     });
@@ -54,7 +62,14 @@ export default function TransactionList({ reload }: { reload: boolean }) {
   };
 
   const getCategoryLabel = (value: string) =>
-    categories.find((c) => c.value === value)?.label || value;
+    categories.find((c) => c.value.toLowerCase() === value.toLowerCase())?.label || value;
+
+  const formatCategoryKey = (cat: string) => {
+    return cat
+      .trim()
+      .toLowerCase()
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
 
   return (
     <div className="px-4 py-6 w-full">
@@ -72,9 +87,9 @@ export default function TransactionList({ reload }: { reload: boolean }) {
           </thead>
           <tbody>
             {transactions.map((tx) => {
-              const colorClass = categoryColors[tx.category] || 'border-gray-300 text-gray-600';
               const categoryLabel = getCategoryLabel(tx.category);
-
+              const formattedKey = formatCategoryKey(tx.category);
+              const categoryColor = categoryColors[formattedKey] || '#ccc';
               const isEditing = editingId === tx._id;
 
               return (
@@ -128,14 +143,28 @@ export default function TransactionList({ reload }: { reload: boolean }) {
                     <>
                       <td className="p-3">{new Date(tx.date).toLocaleDateString()}</td>
                       <td className="p-3">
-                        <Badge variant="outline" className={`text-xs ${colorClass}`}>
+                        <Badge
+                          style={{
+                            backgroundColor: categoryColor,
+                            color: '#fff',
+                          }}
+                          className="text-xs font-medium px-2 py-1 rounded"
+                        >
                           {categoryLabel}
                         </Badge>
                       </td>
                       <td className="p-3 text-gray-700">
-                        {tx.description || <span className="text-gray-400 italic">(No description)</span>}
+                        {tx.description || (
+                          <span className="text-gray-400 italic">(No description)</span>
+                        )}
                       </td>
-                      <td className="p-3 text-right font-semibold">₹{tx.amount}</td>
+                      <td
+                        className={`p-3 text-right font-semibold ${
+                          tx.type === 'income' ? 'text-green-600' : 'text-red-600'
+                        }`}
+                      >
+                        ₹{tx.amount}
+                      </td>
                       <td className="p-3 text-center flex gap-2 justify-center">
                         <Button variant="ghost" size="icon" onClick={() => startEdit(tx)}>
                           <Pencil className="w-4 h-4 text-blue-500" />

@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET() {
   try {
     await connectDB();
-    const data = await Transaction.find().sort({ date: -1 }); 
+    const data = await Transaction.find().sort({ date: -1 });
     return NextResponse.json(data);
   } catch (error) {
     console.error(error);
@@ -17,12 +17,15 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
     const body = await req.json();
+    const { amount, description, date, category, type } = body;
 
-    const { amount, description, date, category } = body;
-
-    // Validation
-    if (!amount || !date || !category) {
+    // Validate fields
+    if (!amount || !date || !category || !type) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    if (!['income', 'expense'].includes(type)) {
+      return NextResponse.json({ error: 'Invalid transaction type' }, { status: 400 });
     }
 
     const newTx = await Transaction.create({
@@ -30,6 +33,7 @@ export async function POST(req: NextRequest) {
       description: description || '',
       date,
       category,
+      type,
     });
 
     return NextResponse.json(newTx, { status: 201 });
@@ -64,6 +68,10 @@ export async function PATCH(req: NextRequest) {
 
     if (!id) {
       return NextResponse.json({ error: 'Missing transaction ID' }, { status: 400 });
+    }
+
+    if (updates.type && !['income', 'expense'].includes(updates.type)) {
+      return NextResponse.json({ error: 'Invalid transaction type' }, { status: 400 });
     }
 
     const tx = await Transaction.findByIdAndUpdate(id, updates, { new: true });

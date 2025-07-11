@@ -2,6 +2,13 @@
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useEffect, useState } from 'react';
+import { format, subMonths } from 'date-fns';
+
+interface Transaction {
+  amount: number;
+  date: string;
+  type: 'income' | 'expense';
+}
 
 export default function MonthlyBarChart({ reload }: { reload: boolean }) {
   const [data, setData] = useState([]);
@@ -9,22 +16,34 @@ export default function MonthlyBarChart({ reload }: { reload: boolean }) {
   useEffect(() => {
     const fetchTx = async () => {
       const res = await fetch('/api/transactions');
-      const txs = await res.json();
+      const txs: Transaction[] = await res.json();
 
-      const grouped: Record<string, number> = {};
+      const monthlyBudget = 20000;
 
-      txs.forEach((tx: any) => {
-        const month = new Date(tx.date).toLocaleString('default', { month: 'short', year: '2-digit' });
-        grouped[month] = (grouped[month] || 0) + tx.amount;
+      // Step 1: Create a map of past 6 months (or any range you want)
+      const monthsMap: Record<string, { spent: number }> = {};
+      for (let i = 0; i < 6; i++) {
+        const month = format(subMonths(new Date(), i), 'MMM yy');
+        monthsMap[month] = { spent: 0 };
+      }
+
+      // Step 2: Loop through transactions & accumulate expenses only
+      txs.forEach((tx) => {
+        const month = format(new Date(tx.date), 'MMM yy');
+        if (tx.type === 'expense') {
+          if (!monthsMap[month]) monthsMap[month] = { spent: 0 };
+          monthsMap[month].spent += tx.amount;
+        }
       });
 
-      const monthlyBudget = 20000; 
-
-      const final = Object.entries(grouped).map(([month, value]) => ({
-        month,
-        spent: value,
-        budget: monthlyBudget,
-      }));
+      // Step 3: Convert to array in correct order (oldest to newest)
+      const final = Object.entries(monthsMap)
+        .reverse()
+        .map(([month, { spent }]) => ({
+          month,
+          spent,
+          budget: monthlyBudget,
+        }));
 
       setData(final);
     };
@@ -33,15 +52,15 @@ export default function MonthlyBarChart({ reload }: { reload: boolean }) {
   }, [reload]);
 
   return (
-    <div className="h-80 w-full">
+    <div className="h-80 w-full bg-white rounded-md shadow p-4">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
           <XAxis dataKey="month" />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="spent" fill="#60a5fa" name="Spent" />
-          <Bar dataKey="budget" fill="#34d399" name="Budget" />
+          <Bar dataKey="spent" fill="#f87171" name="Spent" />
+          <Bar dataKey="budget" fill="#60a5fa" name="Budget" />
         </BarChart>
       </ResponsiveContainer>
     </div>

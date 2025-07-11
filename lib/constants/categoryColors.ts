@@ -1,4 +1,3 @@
-// lib/constants/categoryColors.ts
 export const categoryColors: Record<string, string> = {
   Food: '#FF6384',
   Transport: '#36A2EB',
@@ -14,6 +13,11 @@ export const categoryColors: Record<string, string> = {
   'Personal Care': '#fd79a8',
   Rent: '#6c5ce7',
   Work: '#00b894',
+  Salary: '#00cec9',
+  Freelance: '#00b894',
+  Interest: '#e67e22',
+  Refund: '#55efc4',
+  'Gift Income': '#fdcb6e',
   Pets: '#fab1a0',
   Subscriptions: '#ffeaa7',
   Childcare: '#a29bfe',

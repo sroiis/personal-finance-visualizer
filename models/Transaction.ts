@@ -5,6 +5,11 @@ const TransactionSchema = new mongoose.Schema({
   description: { type: String, required: false, default: '-' },
   date: { type: Date, required: true },
   category: { type: String, required: true },
+  type: {
+    type: String,
+    enum: ['income', 'expense'],
+    required: true,
+  },
 });
 
 export default mongoose.models.Transaction ||
