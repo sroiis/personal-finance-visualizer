@@ -17,7 +17,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-brown-50 text-gray-800">
-      <div className="sticky top-0 z-50 bg-light gray p-4 border-b flex justify-between items-center shadow-md">
+      <div className="sticky top-0 z-50 bg-gray p-4 border-b flex justify-between items-center shadow-md">
         <h1 className="text-2xl font-bold text-gray-800">Personal Finance Visualizer</h1>
         <div className="flex gap-2">
           <SetBudgetButton />
