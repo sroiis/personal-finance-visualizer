@@ -12,29 +12,34 @@ import { Button } from '@/components/ui/button';
 import TransactionForm from './TransactionForm';
 import { useState } from 'react';
 
-export default function AddTransactionButton({ onAdd }: { onAdd: () => void }) {
+interface Props {
+  onAdd: () => void;
+}
+
+export default function AddTransactionButton({ onAdd }: Props) {
   const [open, setOpen] = useState(false);
+
+  const handleAdd = () => {
+    onAdd();        
+    setOpen(false);  
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="default">+ Add Transaction</Button>
+        <Button variant="default" aria-label="Add a new transaction">
+          + Add Transaction
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add New Transaction</DialogTitle>
           <DialogDescription>
-            Fill in the details and save the transaction.
+            Fill in the details and save your transaction.
           </DialogDescription>
         </DialogHeader>
 
-        {/* FORM COMPONENT */}
-        <TransactionForm
-          onAdd={() => {
-            onAdd(); // Refresh transaction list
-            setOpen(false); // Close dialog after submit
-          }}
-        />
+        <TransactionForm onAdd={handleAdd} />
       </DialogContent>
     </Dialog>
   );

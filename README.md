@@ -63,7 +63,7 @@ This project uses MongoDB to store transaction data. To run the app locally, you
 
 - You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (free cloud DB) or install MongoDB locally.
 
-2. **Create a `.env.local` file** in the root of the project with your MongoDB connection string:
+2. **Create a `.env` file** in the root of the project with your MongoDB connection string:
 
 ```env
 MONGODB_URI=your_mongodb_connection_string_here

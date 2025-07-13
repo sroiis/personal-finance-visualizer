@@ -22,33 +22,44 @@ export default function CategoryPieChart({ reload, monthlyOnly }: Props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('/api/transactions');
-      const all: Transaction[] = await res.json();
+      try {
+        const res = await fetch('/api/transactions');
+        const all: unknown = await res.json();
 
-      const now = new Date();
-      const filtered = monthlyOnly
-        ? all.filter((tx) => {
-            const txDate = new Date(tx.date);
-            return (
-              tx.type === 'expense' &&
-              txDate.getMonth() === now.getMonth() &&
-              txDate.getFullYear() === now.getFullYear()
-            );
-          })
-        : all.filter((tx) => tx.type === 'expense');
+        if (!Array.isArray(all)) {
+          console.error('Expected array, got:', all);
+          setData([]); 
+          return;
+        }
 
-      const grouped: Record<string, number> = {};
-      filtered.forEach((tx) => {
-        grouped[tx.category] = (grouped[tx.category] || 0) + tx.amount;
-      });
+        const now = new Date();
+        const filtered = monthlyOnly
+          ? all.filter((tx) => {
+              const txDate = new Date(tx.date);
+              return (
+                tx.type === 'expense' &&
+                txDate.getMonth() === now.getMonth() &&
+                txDate.getFullYear() === now.getFullYear()
+              );
+            })
+          : all.filter((tx) => tx.type === 'expense');
 
-      const chartData = Object.entries(grouped).map(([category, total]) => ({
-        name: category,
-        value: total,
-        color: categoryColors[category],
-      }));
+        const grouped: Record<string, number> = {};
+        filtered.forEach((tx) => {
+          grouped[tx.category] = (grouped[tx.category] || 0) + tx.amount;
+        });
 
-      setData(chartData);
+        const chartData = Object.entries(grouped).map(([category, total]) => ({
+          name: category,
+          value: total,
+          color: categoryColors[category],
+        }));
+
+        setData(chartData);
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
+        setData([]);
+      }
     };
 
     fetchData();

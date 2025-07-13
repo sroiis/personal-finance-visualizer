@@ -22,10 +22,23 @@ export default function TransactionList({ reload }: { reload: boolean }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('/api/transactions');
-      const data = await res.json();
-      setTransactions(data);
+      try {
+        const res = await fetch('/api/transactions');
+        const data = await res.json();
+
+        if (!res.ok || !Array.isArray(data)) {
+          console.error('Fetch error:', data?.error || 'Unexpected response');
+          setTransactions([]);
+          return;
+        }
+
+        setTransactions(data);
+      } catch (err) {
+        console.error('Network error:', err);
+        setTransactions([]);
+      }
     };
+
     fetchData();
   }, [reload, trigger]);
 
@@ -74,6 +87,13 @@ export default function TransactionList({ reload }: { reload: boolean }) {
   return (
     <div className="px-4 py-6 w-full">
       <h2 className="text-xl font-bold mb-4">Transactions</h2>
+
+      {transactions.length === 0 && (
+        <p className="text-sm text-center text-gray-500 mb-4">
+          No transactions found or failed to load.
+        </p>
+      )}
+
       <div className="w-full overflow-x-auto">
         <table className="w-full text-sm border border-gray-200 rounded-md bg-white shadow">
           <thead className="bg-gray-100">

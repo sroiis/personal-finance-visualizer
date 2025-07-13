@@ -1,4 +1,3 @@
-// lib/constants/budgets.ts
 export const initialBudgets: Record<string, number> = {
   Food: 3000,
   Transport: 1500,

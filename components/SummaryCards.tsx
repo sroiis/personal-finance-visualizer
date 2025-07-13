@@ -25,44 +25,54 @@ export default function SummaryCards({ reload }: { reload: boolean }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('/api/transactions');
-      const data: Transaction[] = await res.json();
-      setTransactions(data);
+      try {
+        const res = await fetch('/api/transactions');
+        const data: unknown = await res.json();
 
-      const now = new Date();
-      const thisMonth = data.filter((tx) => {
-        const txDate = new Date(tx.date);
-        return (
-          txDate.getMonth() === now.getMonth() &&
-          txDate.getFullYear() === now.getFullYear()
-        );
-      });
+        if (!Array.isArray(data)) {
+          console.error('Expected array, got:', data);
+          return;
+        }
 
-      const income = thisMonth
-        .filter((tx) => tx.type === 'income')
-        .reduce((sum, tx) => sum + tx.amount, 0);
+        setTransactions(data);
 
-      const spending = thisMonth
-        .filter((tx) => tx.type === 'expense')
-        .reduce((sum, tx) => sum + tx.amount, 0);
-
-      setMonthlyIncome(income);
-      setMonthlySpending(spending);
-
-      const byCategory: Record<string, number> = {};
-      thisMonth
-        .filter((tx) => tx.type === 'expense')
-        .forEach((tx) => {
-          byCategory[tx.category] = (byCategory[tx.category] || 0) + tx.amount;
+        const now = new Date();
+        const thisMonth = data.filter((tx) => {
+          const txDate = new Date(tx.date);
+          return (
+            txDate.getMonth() === now.getMonth() &&
+            txDate.getFullYear() === now.getFullYear()
+          );
         });
 
-      const top = Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0];
-      setTopCategory(top?.[0] || null);
+        const income = thisMonth
+          .filter((tx) => tx.type === 'income')
+          .reduce((sum, tx) => sum + tx.amount, 0);
 
-      const recentTx = [...thisMonth]
-        .sort((a, b) => +new Date(b.date) - +new Date(a.date))
-        .slice(0, 3);
-      setRecent(recentTx);
+        const spending = thisMonth
+          .filter((tx) => tx.type === 'expense')
+          .reduce((sum, tx) => sum + tx.amount, 0);
+
+        setMonthlyIncome(income);
+        setMonthlySpending(spending);
+
+        const byCategory: Record<string, number> = {};
+        thisMonth
+          .filter((tx) => tx.type === 'expense')
+          .forEach((tx) => {
+            byCategory[tx.category] = (byCategory[tx.category] || 0) + tx.amount;
+          });
+
+        const top = Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0];
+        setTopCategory(top?.[0] || null);
+
+        const recentTx = [...thisMonth]
+          .sort((a, b) => +new Date(b.date) - +new Date(a.date))
+          .slice(0, 3);
+        setRecent(recentTx);
+      } catch (err) {
+        console.error('Error fetching summary:', err);
+      }
     };
 
     fetchData();
@@ -74,7 +84,6 @@ export default function SummaryCards({ reload }: { reload: boolean }) {
   return (
     <div className="p-4 rounded-md shadow-md">
       <div className="flex flex-col lg:flex-row gap-4 mb-4">
-        {/* Income This Month */}
         <Card className="bg-white shadow flex-1 border-green-400 border-l-4">
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Total Income (This Month)</p>
@@ -82,7 +91,6 @@ export default function SummaryCards({ reload }: { reload: boolean }) {
           </CardContent>
         </Card>
 
-        {/* Spending This Month */}
         <Card className="bg-white shadow flex-1 border-red-400 border-l-4">
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Total Spent (This Month)</p>
@@ -90,7 +98,6 @@ export default function SummaryCards({ reload }: { reload: boolean }) {
           </CardContent>
         </Card>
 
-        {/* Top Spending Category */}
         <Card className="bg-white shadow flex-1">
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Top Category</p>
@@ -100,7 +107,6 @@ export default function SummaryCards({ reload }: { reload: boolean }) {
           </CardContent>
         </Card>
 
-        {/* Most Recent */}
         <Card className="bg-white shadow flex-1">
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground mb-2">Recent Transactions</p>
@@ -122,7 +128,6 @@ export default function SummaryCards({ reload }: { reload: boolean }) {
         </Card>
       </div>
 
-      {/* Monthly Breakdown Button */}
       <div className="col-span-3 mt-2 text-center">
         <Button
           variant="outline"

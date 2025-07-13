@@ -15,37 +15,43 @@ export default function MonthlyBarChart({ reload }: { reload: boolean }) {
 
   useEffect(() => {
     const fetchTx = async () => {
-      const res = await fetch('/api/transactions');
-      const txs: Transaction[] = await res.json();
+      try {
+        const res = await fetch('/api/transactions');
+        const txs: unknown = await res.json();
 
-      const monthlyBudget = 20000;
-
-      // Step 1: Create a map of past 6 months (or any range you want)
-      const monthsMap: Record<string, { spent: number }> = {};
-      for (let i = 0; i < 6; i++) {
-        const month = format(subMonths(new Date(), i), 'MMM yy');
-        monthsMap[month] = { spent: 0 };
-      }
-
-      // Step 2: Loop through transactions & accumulate expenses only
-      txs.forEach((tx) => {
-        const month = format(new Date(tx.date), 'MMM yy');
-        if (tx.type === 'expense') {
-          if (!monthsMap[month]) monthsMap[month] = { spent: 0 };
-          monthsMap[month].spent += tx.amount;
+        if (!Array.isArray(txs)) {
+          console.error('Expected array, got:', txs);
+          return;
         }
-      });
 
-      // Step 3: Convert to array in correct order (oldest to newest)
-      const final = Object.entries(monthsMap)
-        .reverse()
-        .map(([month, { spent }]) => ({
-          month,
-          spent,
-          budget: monthlyBudget,
-        }));
+        const monthlyBudget = 20000;
 
-      setData(final);
+        const monthsMap: Record<string, { spent: number }> = {};
+        for (let i = 0; i < 6; i++) {
+          const month = format(subMonths(new Date(), i), 'MMM yy');
+          monthsMap[month] = { spent: 0 };
+        }
+
+        txs.forEach((tx) => {
+          const month = format(new Date(tx.date), 'MMM yy');
+          if (tx.type === 'expense') {
+            if (!monthsMap[month]) monthsMap[month] = { spent: 0 };
+            monthsMap[month].spent += tx.amount;
+          }
+        });
+
+        const final = Object.entries(monthsMap)
+          .reverse()
+          .map(([month, { spent }]) => ({
+            month,
+            spent,
+            budget: monthlyBudget,
+          }));
+
+        setData(final);
+      } catch (err) {
+        console.error('Error fetching bar chart data:', err);
+      }
     };
 
     fetchTx();
