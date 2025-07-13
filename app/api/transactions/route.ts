@@ -3,65 +3,66 @@ import Transaction from '@/models/Transaction';
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 
-const count = await Transaction.countDocuments();
-if (count === 0) {
-    const now = new Date();
-    const lastMonth = new Date(now);
-    lastMonth.setMonth(now.getMonth() - 1);
-
-    const dummyTransactions = [
-        {
-            amount: 25000,
-            description: 'Monthly Salary',
-            date: new Date(now.getFullYear(), now.getMonth(), 1),
-            category: 'Salary',
-            type: 'income',
-        },
-        {
-            amount: 1500,
-            description: 'Groceries',
-            date: new Date(now.getFullYear(), now.getMonth(), 3),
-            category: 'Food',
-            type: 'expense',
-        },
-        {
-            amount: 800,
-            description: 'Metro Recharge',
-            date: new Date(now.getFullYear(), now.getMonth(), 8),
-            category: 'Transport',
-            type: 'expense',
-        },
-        {
-            amount: 2000,
-            description: 'Zomato Order',
-            date: new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 13),
-            category: 'Food',
-            type: 'expense',
-        },
-        {
-            amount: 18000,
-            description: 'Freelance Project',
-            date: new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 2),
-            category: 'Work',
-            type: 'income',
-        },
-    ];
-    await Transaction.insertMany(dummySeedTransactions);
-}
-
 export async function GET() {
-    try {
-        await connectDB();
-        console.log('DB connected for GET');
+  try {
+    await connectDB();
+    console.log('DB connected for GET');
 
-        const count = await Transaction.countDocuments();
-        const data = await Transaction.find().sort({ date: -1 });
-        console.log('Transactions fetched:', data.length);
-        return NextResponse.json(data);
-    } catch (error) {
-        console.error('GET /api/transactions error:', error);
-        return NextResponse.json({ error: 'Failed to fetch transactions' }, { status: 500 });
+    const count = await Transaction.countDocuments();
+
+    if (count === 0) {
+      const now = new Date();
+      const lastMonth = new Date(now);
+      lastMonth.setMonth(now.getMonth() - 1);
+
+      const dummyTransactions = [
+        {
+          amount: 25000,
+          description: 'Monthly Salary',
+          date: new Date(now.getFullYear(), now.getMonth(), 1),
+          category: 'Salary',
+          type: 'income',
+        },
+        {
+          amount: 1500,
+          description: 'Groceries',
+          date: new Date(now.getFullYear(), now.getMonth(), 3),
+          category: 'Food',
+          type: 'expense',
+        },
+        {
+          amount: 800,
+          description: 'Metro Recharge',
+          date: new Date(now.getFullYear(), now.getMonth(), 8),
+          category: 'Transport',
+          type: 'expense',
+        },
+        {
+          amount: 2000,
+          description: 'Zomato Order',
+          date: new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 13),
+          category: 'Food',
+          type: 'expense',
+        },
+        {
+          amount: 18000,
+          description: 'Freelance Project',
+          date: new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 2),
+          category: 'Work',
+          type: 'income',
+        },
+      ];
+
+      await Transaction.insertMany(dummyTransactions);
+      console.log('Seeded initial dummy transactions ✅');
     }
+
+    const data = await Transaction.find().sort({ date: -1 });
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('GET /api/transactions error:', error);
+    return NextResponse.json({ error: 'Failed to fetch transactions' }, { status: 500 });
+  }
 }
 
 
