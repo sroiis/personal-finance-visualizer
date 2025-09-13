@@ -23,7 +23,10 @@ export default function TransactionList({ reload }: { reload: boolean }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/transactions');
+        const res = await fetch('/api/transactions', {
+          method: 'GET', 
+          credentials: 'include',
+        });
         const data = await res.json();
 
         if (!res.ok || !Array.isArray(data)) {
@@ -43,7 +46,7 @@ export default function TransactionList({ reload }: { reload: boolean }) {
   }, [reload, trigger]);
 
   const deleteTx = async (id: string) => {
-    await fetch(`/api/transactions?id=${id}`, { method: 'DELETE' });
+    await fetch(`/api/transactions?id=${id}`, { method: 'DELETE' , credentials: 'include',});
     setTrigger(!trigger);
   };
 
@@ -61,6 +64,7 @@ export default function TransactionList({ reload }: { reload: boolean }) {
   const submitEdit = async () => {
     await fetch(`/api/transactions?id=${editingId}`, {
       method: 'PATCH',
+      credentials: 'include',
       body: JSON.stringify({
         amount: Number(form.amount),
         description: form.description,

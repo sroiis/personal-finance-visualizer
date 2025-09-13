@@ -32,7 +32,7 @@ export default function MonthlyBarChart({ reload }: Props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resTx = await fetch('/api/transactions', { cache: 'no-store' });
+        const resTx = await fetch('/api/transactions', { cache: 'no-store', credentials: 'include', });
         const txs: Transaction[] = await resTx.json();
 
         const monthsMap: Record<string, { spent: number; budget: number }> = {};
@@ -53,7 +53,9 @@ export default function MonthlyBarChart({ reload }: Props) {
         // Fetch budgets for each month
         const budgetPromises = Object.keys(monthsMap).map(async key => {
          // Fetch budgets
-const resBud = await fetch(`/api/budgets?month=${key}`);
+const resBud = await fetch(`/api/budgets?month=${key}`, {
+  credentials: 'include',
+});
 let budgets: Budget[] = [];
 if (resBud.ok) budgets = await resBud.json();
 

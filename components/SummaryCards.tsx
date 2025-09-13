@@ -26,7 +26,10 @@ export default function SummaryCards({ reload}: { reload: boolean }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/transactions');
+        const res = await fetch('/api/transactions', {
+          method: 'GET',
+          credentials: 'include',
+        });
         const data: unknown = await res.json();
 
         if (!Array.isArray(data)) {

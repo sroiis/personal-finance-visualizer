@@ -33,6 +33,7 @@ export default function TransactionForm({ onAdd }: Props) {
     try {
       const res = await fetch('/api/transactions', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: Number(amount),

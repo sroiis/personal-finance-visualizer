@@ -23,7 +23,10 @@ export default function CategoryPieChart({ reload, monthlyOnly }: Props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/transactions');
+        const res = await fetch('/api/transactions', {
+          method: 'GET', 
+          credentials: 'include',
+        });
         const all: unknown = await res.json();
 
         if (!Array.isArray(all)) {

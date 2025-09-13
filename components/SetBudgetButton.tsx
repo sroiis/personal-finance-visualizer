@@ -28,7 +28,9 @@ export default function SetBudgetButton({ onSave }: Props) {
   useEffect(() => {
     const fetchBudgets = async () => {
       try {
-        const res = await fetch(`/api/budgets?month=${month}`);
+        const res = await fetch(`/api/budgets?month=${month}`, {
+          credentials: 'include',
+        });
         if (!res.ok) return;
         const data = await res.json();
         const formatted = Object.fromEntries(
@@ -58,6 +60,7 @@ export default function SetBudgetButton({ onSave }: Props) {
 
       await fetch('/api/budgets', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });

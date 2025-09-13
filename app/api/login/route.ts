@@ -11,8 +11,11 @@ export async function POST(req: NextRequest) {
   }
 
   const token = signToken({ username });
-
-  const res = NextResponse.json({ success: true });
-  res.cookies.set('token', token, { httpOnly: true, maxAge: 3600, path: '/' });
-  return res;
+  const res = NextResponse.json({ success: true, msg: 'Logged in successfully' });
+  res.cookies.set('token',  token,{ httpOnly: true,
+  maxAge: 3600, // 1 hour
+  path: '/',
+  secure: process.env.NODE_ENV === 'production', // true on Vercel
+  sameSite: 'strict',});
+  
 }
