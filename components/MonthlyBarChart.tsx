@@ -10,51 +10,79 @@ interface Transaction {
   type: 'income' | 'expense';
 }
 
-export default function MonthlyBarChart({ reload }: { reload: boolean }) {
-  const [data, setData] = useState([]);
+interface Budget {
+  category: string;
+  month: string;
+  amount: number;
+}
+
+interface MonthlyData {
+  month: string;
+  spent: number;
+  budget: number;
+}
+
+interface Props {
+  reload: boolean; // toggle to refetch
+}
+
+export default function MonthlyBarChart({ reload }: Props) {
+  const [data, setData] = useState<MonthlyData[]>([]);
 
   useEffect(() => {
-    const fetchTx = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch('/api/transactions');
-        const txs: unknown = await res.json();
+        const resTx = await fetch('/api/transactions', { cache: 'no-store' });
+        const txs: Transaction[] = await resTx.json();
 
-        if (!Array.isArray(txs)) {
-          console.error('Expected array, got:', txs);
-          return;
+        const monthsMap: Record<string, { spent: number; budget: number }> = {};
+        for (let i = 5; i >= 0; i--) {
+          const key = format(subMonths(new Date(), i), 'yyyy-MM');
+          monthsMap[key] = { spent: 0, budget: 0 };
         }
 
-        const monthlyBudget = 20000;
-
-        const monthsMap: Record<string, { spent: number }> = {};
-        for (let i = 0; i < 6; i++) {
-          const month = format(subMonths(new Date(), i), 'MMM yy');
-          monthsMap[month] = { spent: 0 };
-        }
-
-        txs.forEach((tx) => {
-          const month = format(new Date(tx.date), 'MMM yy');
+        // Sum expenses per month
+        txs.forEach(tx => {
           if (tx.type === 'expense') {
-            if (!monthsMap[month]) monthsMap[month] = { spent: 0 };
-            monthsMap[month].spent += tx.amount;
+            const key = format(new Date(tx.date), 'yyyy-MM');
+            if (!monthsMap[key]) monthsMap[key] = { spent: 0, budget: 0 };
+            monthsMap[key].spent += Number(tx.amount) || 0;
           }
         });
 
-        const final = Object.entries(monthsMap)
-          .reverse()
-          .map(([month, { spent }]) => ({
-            month,
-            spent,
-            budget: monthlyBudget,
-          }));
+        // Fetch budgets for each month
+        const budgetPromises = Object.keys(monthsMap).map(async key => {
+         // Fetch budgets
+const resBud = await fetch(`/api/budgets?month=${key}`);
+let budgets: Budget[] = [];
+if (resBud.ok) budgets = await resBud.json();
 
-        setData(final);
+// Build a map so each category is counted only once (latest value)
+const budgetMap: Record<string, number> = {};
+budgets.forEach(b => {
+  budgetMap[b.category] = b.amount; // replaces old value if exists
+});
+
+// Sum all category budgets to get total for the month
+monthsMap[key].budget = Object.values(budgetMap).reduce((sum, val) => sum + val, 0);
+
+        });
+
+        await Promise.all(budgetPromises);
+
+        const finalData: MonthlyData[] = Object.entries(monthsMap).map(([month, { spent, budget }]) => ({
+          month: format(new Date(month + '-01'), 'MMM yy'),
+          spent,
+          budget,
+        }));
+
+        setData(finalData);
       } catch (err) {
         console.error('Error fetching bar chart data:', err);
       }
     };
 
-    fetchTx();
+    fetchData();
   }, [reload]);
 
   return (

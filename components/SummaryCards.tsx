@@ -15,7 +15,7 @@ interface Transaction {
   type: 'income' | 'expense';
 }
 
-export default function SummaryCards({ reload }: { reload: boolean }) {
+export default function SummaryCards({ reload}: { reload: boolean }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [monthlyIncome, setMonthlyIncome] = useState(0);
   const [monthlySpending, setMonthlySpending] = useState(0);
