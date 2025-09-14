@@ -117,7 +117,7 @@ export async function PATCH(req: NextRequest) {
     if (!tx) {
       return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
     }
-
+    console.log("DB IS THERE");
     return NextResponse.json(tx);
   } catch (err) {
     console.error('PATCH /transactions error:', err);
