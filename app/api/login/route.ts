@@ -16,7 +16,8 @@ export async function POST(req: NextRequest) {
   maxAge: 3600, // 1 hour
   path: '/',
   secure: process.env.NODE_ENV === 'production', // true on Vercel
-  sameSite: 'strict',});
+  sameSite: 'lax',});
+  console.log("cookies on server:", req.cookies.getAll());
   return res;
   
 }
