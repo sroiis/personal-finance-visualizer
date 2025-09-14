@@ -17,5 +17,6 @@ export async function POST(req: NextRequest) {
   path: '/',
   secure: process.env.NODE_ENV === 'production', // true on Vercel
   sameSite: 'strict',});
+  return res;
   
 }
