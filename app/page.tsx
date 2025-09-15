@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
 
 import TransactionList from '@/components/TransactionList';
 import AddTransactionButton from '@/components/AddTransactionButton';
@@ -13,20 +14,29 @@ import MonthlyBarChart from '@/components/MonthlyBarChart';
 export default function Home() {
   const [reload, setReload] = useState(false);
   const [showMonthlyOnly, setShowMonthlyOnly] = useState(true);
-//const [loggedIn, setLoggedIn] = useState(false);
 
-  
   return (
     <main className="min-h-screen bg-opacity-100 bg-brown-50 text-gray-800">
       <div className="sticky top-0 bg-cream bg-opacity-100 p-4 border-b flex justify-between items-center shadow-md">
-        <h1 className="text-2xl font-bold text-gray-800">Personal Finance Visualizer</h1>
-        <div className="flex gap-2">
-          <SetBudgetButton onSave={() => setReload(prev => !prev)} />
-          <AddTransactionButton onAdd={() => setReload(prev => !prev)} />
-        </div>
-      </div>
+    <h1 className="text-2xl font-bold text-gray-800">
+      Personal Finance Visualizer
+    </h1>
 
-      <div className="px-6 mt-4">
+    {/* 🔑 Only Login stays in navbar */}
+    <Link href="/login">
+      <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">
+        Login
+      </button>
+    </Link>
+  </div>
+
+  {/* Dashboard content */}
+  <div className="px-6 mt-4">
+    {/* 👉 Moved here instead of navbar */}
+    <div className="flex gap-2 mb-4">
+      <SetBudgetButton onSave={() => setReload(prev => !prev)} />
+      <AddTransactionButton onAdd={() => setReload(prev => !prev)} />
+    </div>
         <SummaryCards reload={reload} />
       </div>
 
